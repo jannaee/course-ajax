@@ -3,6 +3,7 @@
     const searchField = document.querySelector('#search-keyword');
     let searchedForText;
     const responseContainer = document.querySelector('#response-container');
+
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         responseContainer.innerHTML = '';
@@ -10,25 +11,39 @@
     });
 
     //XHR Request
-    const requestObject = new XMLHttpRequest();//instantiate the xhr obj
-    requestObject.onload = addImage;//If successfull a response is returned
-    requestObject.onerror = function (errorMessage) {
-        console.log('Houston we have a problem');
-        requestError(errorMessage, 'image');
-    };//if not successful this will occur
+    const unsplashRequest = new XMLHttpRequest();
 
-    requestObject.open('GET', `https://api.unsplash.com/search/photos?page=1&query=${searchedText}`);
-    requestObject.setRequestHeader('', '');
-    requestAnimationFrame.send();
-    const searchedText = 'android';
-    requestObject.send();
+    unsplashRequest.open('GET', `https://api.unsplash.com/search/photos?page=1&query=${searchedForText}`);
+    unsplashRequest.onload = addImage;
+    unsplashRequest.setRequestHeader('Authorization', 'Client-ID 09adddb5121f6e55b243bd1c8ed8c849b7e2b14ffc4289a20cee193023f9e108');
+    unsplashRequest.send();
 
     function addImage() {
-        console.log('Successful retrieval of data');
-        let htmlContent = '';
-        const data = JSON.parse(this.responseText);
-        const firstImage = data.results[0];
-        htmlContent = `<figure></figure>`;
-        
+        const data = JSON.parse(this.responseText); //convert response from json into a Javascript object and format the data
+        const firstImage = data.results[0];//get the first image
+        if (data && data.results && data.results[0]) {//add the first image to the page 
+            const firstImage = data.results[0];
+            htmlContent = `<figure>
+                <img src="${firstImage.urls.regular}" alt="${searchedForText}">
+                <figcaption>${searchedForText} by ${firstImage.user.name}</figcaption>
+                <figure>`;
+        } else {
+            htmlContent = '<div class="error-no-image">No images available</div>';
+        }
+        responseContainer.insertAdjacentHTML('afterbegin', htmlContent);
     }
+   function addArticles() {
+    const articleRequest = new XMLHttpRequest();
+    articleRequest.onload = addArticles;
+    articleRequest.open('GET', `http://api.nytimes.com/svc/search/v2/articlesearch.json?q=${searchedForText}&api-key=22ffa90da46b4516a1db2eea01c7bcf6`);
+    const firstPara = data.results[0];
+    if (data && data.results && data.results[0]) {
+        const firstPara = data.results[0];
+    } else {
+        htmlContent = '<div class="error-no-image">No information available</div>';
+
+    }
+    responseContainer.insertAdjacentText('beforeend', htmlContent);
+
+   } 
 })();
