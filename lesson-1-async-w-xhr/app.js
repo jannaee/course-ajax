@@ -20,7 +20,8 @@
 
     function addImage() {
         const data = JSON.parse(this.responseText); //convert response from json into a Javascript object and format the data
-        const firstImage = data.results[0];//get the first image
+        let htmlContent = '';
+
         if (data && data.results && data.results[0]) {//add the first image to the page 
             const firstImage = data.results[0];
             htmlContent = `<figure>
@@ -32,18 +33,22 @@
         }
         responseContainer.insertAdjacentHTML('afterbegin', htmlContent);
     }
-   function addArticles() {
+
     const articleRequest = new XMLHttpRequest();
     articleRequest.onload = addArticles;
     articleRequest.open('GET', `http://api.nytimes.com/svc/search/v2/articlesearch.json?q=${searchedForText}&api-key=22ffa90da46b4516a1db2eea01c7bcf6`);
-    const firstPara = data.results[0];
-    if (data && data.results && data.results[0]) {
-        const firstPara = data.results[0];
-    } else {
-        htmlContent = '<div class="error-no-image">No information available</div>';
+    articleRequest.send();
+    function addArticles() {
+        let htmlContent = '';
+        const data = JSON.parse(this.responseText);
 
+        if (data.response && data.response.docs && data.response.docs.length > 1) {
+            htmlContent = '<ul>' + data.response.docs.map(article => `<li class="article">
+            <h2><a href="${article.web_url}">${article.headline.main}</a></h2>
+            <p>"${article.snippet}"</p></li>`).join('') +'</ul>';
+        } else {
+            htmlContent = '<div class="error-no-image">No information available</div>';
+        }
+        responseContainer.insertAdjacentHTML('beforeend', htmlContent);
     }
-    responseContainer.insertAdjacentText('beforeend', htmlContent);
-
-   } 
 })();
